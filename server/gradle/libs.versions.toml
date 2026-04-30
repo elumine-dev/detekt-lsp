@@ -1,0 +1,41 @@
+[versions]
+kotlin = "2.1.0"
+detekt = "1.23.8"
+lsp4j = "0.24.0"
+kotlinxCoroutines = "1.10.1"
+slf4j = "2.0.16"
+junit = "5.11.4"
+mockk = "1.13.14"
+kotest = "5.9.1"
+graalvmNative = "0.10.4"
+shadow = "8.3.5"
+jmh = "0.7.3"
+
+[libraries]
+kotlin-gradle-plugin     = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin",      version.ref = "kotlin" }
+kotlin-stdlib            = { module = "org.jetbrains.kotlin:kotlin-stdlib",              version.ref = "kotlin" }
+kotlin-reflect           = { module = "org.jetbrains.kotlin:kotlin-reflect",             version.ref = "kotlin" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+
+kotlinx-coroutines-core  = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",  version.ref = "kotlinxCoroutines" }
+
+detekt-api        = { module = "io.gitlab.arturbosch.detekt:detekt-api",        version.ref = "detekt" }
+detekt-core       = { module = "io.gitlab.arturbosch.detekt:detekt-core",       version.ref = "detekt" }
+detekt-rules      = { module = "io.gitlab.arturbosch.detekt:detekt-rules",      version.ref = "detekt" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-test       = { module = "io.gitlab.arturbosch.detekt:detekt-test",       version.ref = "detekt" }
+
+lsp4j = { module = "org.eclipse.lsp4j:org.eclipse.lsp4j", version.ref = "lsp4j" }
+
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+
+junit-jupiter      = { module = "org.junit.jupiter:junit-jupiter",         version.ref = "junit" }
+mockk              = { module = "io.mockk:mockk",                          version.ref = "mockk" }
+kotest-runner      = { module = "io.kotest:kotest-runner-junit5",          version.ref = "kotest" }
+kotest-assertions  = { module = "io.kotest:kotest-assertions-core",        version.ref = "kotest" }
+
+[plugins]
+kotlin-jvm     = { id = "org.jetbrains.kotlin.jvm",        version.ref = "kotlin" }
+graalvm-native = { id = "org.graalvm.buildtools.native",   version.ref = "graalvmNative" }
+shadow         = { id = "com.gradleup.shadow",             version.ref = "shadow" }
+jmh            = { id = "me.champeau.jmh",                 version.ref = "jmh" }

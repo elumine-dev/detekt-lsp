@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/packages/vscode-extension/package-lock.json
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Validate Open VSX token
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "OVSX_PAT secret is missing"
+            exit 1
+          fi
+          echo "OVSX_PAT is configured"
+
+      - name: Validate Marketplace token
+        env:
+          MARKETPLACE_TOKEN: ${{ secrets.MARKETPLACE_TOKEN }}
+        run: |
+          if [ -z "$MARKETPLACE_TOKEN" ]; then
+            echo "MARKETPLACE_TOKEN secret is missing"
+            exit 1
+          fi
+          echo "MARKETPLACE_TOKEN is configured"
+
+      - name: Verify tag matches extension version
+        working-directory: client/packages/vscode-extension
+        run: |
+          PACKAGE_VERSION=$(node -e "console.log(require('./package.json').version)")
+          TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+            echo "Tag v$TAG_VERSION does not match package.json version $PACKAGE_VERSION"
+            exit 1
+          fi
+          echo "Version $PACKAGE_VERSION matches tag"
+
+      - name: Build server (shadow jar)
+        working-directory: server
+        run: ./gradlew :lsp-server-app:shadowJar
+
+      # Place the shipped server jar where the extension expects it
+      # (server-launcher.ts looks under server-bin/detekt-lsp.jar).
+      - name: Bundle server jar into extension
+        run: |
+          mkdir -p client/packages/vscode-extension/server-bin
+          cp server/lsp-server-app/build/libs/detekt-lsp-all.jar \
+             client/packages/vscode-extension/server-bin/detekt-lsp.jar
+
+      - name: Install client deps
+        working-directory: client/packages/vscode-extension
+        run: npm install --no-audit --no-fund
+
+      - name: Build client
+        working-directory: client/packages/vscode-extension
+        run: npm run build
+
+      - name: Package extension
+        working-directory: client/packages/vscode-extension
+        run: npx --yes @vscode/vsce package --no-dependencies
+
+      - name: Publish to VS Code Marketplace
+        working-directory: client/packages/vscode-extension
+        run: npx --yes @vscode/vsce publish --no-dependencies -p ${{ secrets.MARKETPLACE_TOKEN }}
+
+      - name: Publish to Open VSX Registry
+        working-directory: client/packages/vscode-extension
+        run: |
+          VSIX=$(ls *.vsix | head -1)
+          npx --yes ovsx publish "$VSIX" -p ${{ secrets.OVSX_PAT }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          name: ${{ github.ref_name }}
+          files: |
+            client/packages/vscode-extension/*.vsix
+            server/lsp-server-app/build/libs/detekt-lsp-all.jar
+          fail_on_unmatched_files: true
+          generate_release_notes: true

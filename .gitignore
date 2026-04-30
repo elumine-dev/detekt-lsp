@@ -1,0 +1,54 @@
+# Gradle
+.gradle/
+build/
+local.properties
+.kotlin/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+# Node
+node_modules/
+*.log
+npm-debug.log*
+yarn-error.log
+
+# VSCode extension build
+client/packages/*/dist/
+client/packages/*/out/
+*.vsix
+
+# Native image artefacts
+**/native-image-build/
+*.lib
+*.exp
+*.pdb
+*.so
+*.dylib
+
+# Project Leyden / CDS
+*.jsa
+*.aotconf
+*.aot
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Java
+*.class
+hs_err_pid*
+replay_pid*
+
+# Coverage / reports
+**/reports/
+**/coverage/

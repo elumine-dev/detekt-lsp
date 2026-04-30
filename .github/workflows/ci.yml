@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server (JVM jar)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Build server
+        working-directory: server
+        run: ./gradlew build --stacktrace
+
+      # Produce the fat-jar that the VSCode extension will launch in dev mode
+      # and ship as a fallback alongside future native binaries.
+      - name: Shadow JAR
+        working-directory: server
+        run: ./gradlew :lsp-server-app:shadowJar
+
+      # Send a single LSP `initialize` request over stdio and assert the server
+      # responds with its serverInfo. Catches packaging regressions (missing
+      # main class, classpath issues, JSON-RPC framing breakage) end-to-end.
+      - name: Smoke test (LSP initialize)
+        working-directory: server
+        run: |
+          JAR=lsp-server-app/build/libs/detekt-lsp-all.jar
+          REQ='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"processId":null,"rootUri":null,"capabilities":{}}}'
+          RESP=$( ( printf 'Content-Length: %d\r\n\r\n%s' "${#REQ}" "$REQ"; sleep 2 ) | java -jar "$JAR" 2>/dev/null | head -c 800 )
+          echo "$RESP"
+          echo "$RESP" | grep -q '"name":"detekt-lsp"' || { echo "Smoke test failed"; exit 1; }
+
+      - name: Upload shadow JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-lsp-all-jar
+          path: server/lsp-server-app/build/libs/detekt-lsp-all.jar
+          retention-days: 7
+
+  client:
+    name: VSCode extension
+    needs: server
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/packages/vscode-extension/package-lock.json
+
+      - name: Install
+        working-directory: client/packages/vscode-extension
+        run: npm install --no-audit --no-fund
+
+      - name: Type-check
+        working-directory: client/packages/vscode-extension
+        run: npx tsc --noEmit -p .
+
+      - name: Build
+        working-directory: client/packages/vscode-extension
+        run: npm run build
+
+      # Package the .vsix without bundling the server (server-bin is empty
+      # at this milestone). Validates the package descriptor is internally
+      # consistent so a Marketplace publish later cannot break here.
+      - name: Package (verify it builds cleanly)
+        working-directory: client/packages/vscode-extension
+        run: npx --yes @vscode/vsce package --no-dependencies
+
+      - name: Upload .vsix
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-lsp-vsix
+          path: client/packages/vscode-extension/*.vsix
+          retention-days: 7

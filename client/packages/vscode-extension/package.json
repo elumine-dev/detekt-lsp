@@ -1,0 +1,95 @@
+{
+  "name": "detekt-lsp",
+  "displayName": "detekt",
+  "description": "Fast incremental Kotlin static analysis (detekt LSP).",
+  "version": "0.0.1",
+  "publisher": "detekt",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "kotlin",
+    "detekt",
+    "lint",
+    "static-analysis"
+  ],
+  "activationEvents": [
+    "onLanguage:kotlin"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "detekt",
+      "properties": {
+        "detekt.server.binary": {
+          "type": "string",
+          "default": "",
+          "description": "Path to language-server binary. Empty = auto-resolve (bundled native → bundled jar → JAVA_HOME)."
+        },
+        "detekt.config.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to detekt.yml. Empty = auto-detect from project root."
+        },
+        "detekt.baseline.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to baseline.xml. Empty = no baseline."
+        },
+        "detekt.plugins.jars": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Additional plugin JARs to load."
+        },
+        "detekt.rules.disable": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Rule IDs to disable."
+        },
+        "detekt.autoCorrect.onSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Auto-fix formatting issues on save."
+        },
+        "detekt.jvm.args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Extra JVM args (only used when running the JAR fallback, not the native binary)."
+        },
+        "detekt.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Log LSP traffic to the output channel."
+        }
+      }
+    },
+    "commands": [
+      { "command": "detekt.restart",    "title": "detekt: Restart Server" },
+      { "command": "detekt.showOutput", "title": "detekt: Show Output" }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "build": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20",
+    "watch": "npm run build -- --watch",
+    "vscode:prepublish": "npm run build -- --minify"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.0"
+  }
+}

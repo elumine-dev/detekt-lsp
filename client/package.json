@@ -1,0 +1,7 @@
+{
+  "name": "detekt-lsp-client-root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
