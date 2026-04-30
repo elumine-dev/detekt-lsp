@@ -1,0 +1,19 @@
+# Source not needed at runtime
+src/**
+tsconfig.json
+
+# Tooling artefacts
+node_modules/**
+out/**
+.vscode/**
+.vscode-test/**
+
+# Dev metadata
+**/*.map
+**/.eslintrc*
+**/tsconfig*.json
+**/*.tsbuildinfo
+**/*.log
+
+# OS
+.DS_Store
