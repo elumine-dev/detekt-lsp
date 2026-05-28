@@ -2,7 +2,7 @@
   "name": "detekt-lsp",
   "displayName": "detekt",
   "description": "Fast incremental Kotlin static analysis (detekt LSP).",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "detekt",
   "license": "Apache-2.0",
   "repository": {

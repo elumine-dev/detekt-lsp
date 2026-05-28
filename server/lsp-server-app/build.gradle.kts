@@ -17,10 +17,9 @@ application {
 
 dependencies {
     implementation(project(":lsp-protocol"))
-    // M0: server-app only depends on protocol layer.
-    // Remaining modules wired in subsequent milestones.
+    implementation(project(":lsp-analysis"))
+    // lsp-analysis brings lsp-document + lsp4j transitively (api dependencies).
 
-    implementation(libs.lsp4j)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
     runtimeOnly(libs.slf4j.simple)

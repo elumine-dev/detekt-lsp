@@ -25,8 +25,9 @@ class DetektLanguageServer : LanguageServer, LanguageClientAware {
 
     override fun initialize(params: InitializeParams): CompletableFuture<InitializeResult> {
         val capabilities = ServerCapabilities().apply {
-            // M0: announce capabilities only. Real handlers wired at M1+.
-            setTextDocumentSync(TextDocumentSyncKind.Incremental)
+            // M0+: Full sync — every change ships the whole buffer.
+            // M1 switches to Incremental once the PSI cache + reparse layer lands.
+            setTextDocumentSync(TextDocumentSyncKind.Full)
         }
         val info = LspServerInfo(ServerInfo.NAME, ServerInfo.VERSION)
         return CompletableFuture.completedFuture(InitializeResult(capabilities, info))
@@ -36,7 +37,10 @@ class DetektLanguageServer : LanguageServer, LanguageClientAware {
         client.logMessage(MessageParams(MessageType.Info, "${ServerInfo.NAME} ${ServerInfo.VERSION} ready"))
     }
 
-    override fun shutdown(): CompletableFuture<Any> = CompletableFuture.completedFuture(null)
+    override fun shutdown(): CompletableFuture<Any> {
+        textDocumentService.shutdown()
+        return CompletableFuture.completedFuture(null)
+    }
 
     override fun exit() {
         // For stdio transport, the launcher returns from startListening on stream close.

@@ -3,10 +3,10 @@
 Fast incremental Kotlin static analysis for VS Code, Neovim, Helix, Zed, and any LSP-compatible editor. Powered by [detekt](https://detekt.dev).
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
-[![Status: Pre-alpha](https://img.shields.io/badge/Status-Pre--alpha_(M0)-orange.svg?style=flat-square)](#roadmap)
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha_(M0%2B)-yellow.svg?style=flat-square)](#roadmap)
 [![Detekt: 1.x](https://img.shields.io/badge/detekt-1.x-purple.svg?style=flat-square)](https://detekt.dev)
 
-> **Status: M0 — skeleton only.** The LSP server boots and responds to `initialize`. No real analysis yet. ETA M2 (live syntactic diagnostics): mid-2026.
+> **Status: 0.1.0-alpha — parse-error diagnostics live.** The LSP server boots, parses every Kotlin buffer with `kotlin-compiler-embeddable`, and publishes one LSP diagnostic per `PsiErrorElement` (syntax error). No detekt rule engine wired in yet — Tier 1 rules land in M2.
 
 ## Why detekt-lsp
 
@@ -37,6 +37,7 @@ Pair detekt-lsp with [**kotlin-jump**](https://github.com/elumine-dev/kotlin-jum
 | Milestone | Goal | Target |
 |---|---|---|
 | **M0** ✅ | Skeleton, hello-LSP, CI matrix | Done (Apr 2026) |
+| **M0+** ✅ | Tier 0 parse-error diagnostics, full-sync buffer | Done (May 2026, v0.1.0-alpha) |
 | **M1** | PSI cache + incremental `didChange` (reparse 1k LOC < 10 ms) | Q2 2026 |
 | **M2** | detekt-bridge, syntactic rules push (Tier 1 < 30 ms) | Q2–Q3 2026 |
 | **M3** | Pull diagnostics, workspace diagnostics | Q3 2026 |

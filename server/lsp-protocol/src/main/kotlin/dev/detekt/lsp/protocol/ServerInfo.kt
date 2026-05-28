@@ -6,6 +6,6 @@ package dev.detekt.lsp.protocol
  */
 object ServerInfo {
     const val NAME: String = "detekt-lsp"
-    const val VERSION: String = "0.0.1-dev"
+    const val VERSION: String = "0.1.0"
     const val LSP_SPEC_VERSION: String = "3.18"
 }
