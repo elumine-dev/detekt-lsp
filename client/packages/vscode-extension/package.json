@@ -1,9 +1,9 @@
 {
   "name": "detekt-lsp",
-  "displayName": "detekt",
-  "description": "Fast incremental Kotlin static analysis (detekt LSP).",
+  "displayName": "Detekt LSP",
+  "description": "Fast incremental Kotlin static analysis. Community LSP wrapper for detekt — multi-editor (VS Code, Neovim, Helix, Zed).",
   "version": "0.1.0",
-  "publisher": "detekt",
+  "publisher": "elumine",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
