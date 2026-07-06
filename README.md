@@ -117,7 +117,7 @@ Once M1 ships, good first issues will be tagged `good-first-issue`.
 ## Companion tools
 
 - **detekt-lsp** — this server.
-- [**kotlin-jump**](https://github.com/elumine-dev/kotlin-jump) — VS Code Kotlin/Java navigation, no JVM (4.6k+ installs).
+- [**kotlin-jump**](https://github.com/elumine-dev/kotlin-jump) — VS Code Kotlin/Java navigation, no JVM (9,639 installs).
 - [**SearchDeadCode**](https://github.com/KevinDoremy/SearchDeadCode) — Dead code detection for Android (Rust CLI on Homebrew).
 
 Maintained alongside [elumine-dev](https://github.com/elumine-dev) by [Kevin Doremy](https://kevindoremy.com).
